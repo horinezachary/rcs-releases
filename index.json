@@ -1,3 +1,11 @@
 {
-  "modules": []
+  "modules": [
+    {
+      "id": "videohub-router",
+      "name": "Videohub Router",
+      "description": "Route sources to destinations on a Blackmagic Videohub",
+      "repo": "horinezachary/rcs-videohub-router",
+      "publicKey": "ed25519:rLZWenSiRqwXru8SQfQC4R818vduQBjtuxhk4yw5gC0="
+    }
+  ]
 }
