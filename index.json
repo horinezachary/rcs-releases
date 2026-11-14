@@ -13,6 +13,13 @@
       "description": "Use the touch screen and Stream Deck as Bitfocus Companion surfaces",
       "repo": "horinezachary/rcs-companion-module",
       "publicKey": "ed25519:lgu2KDv901JTGcsSrvaYTWLm0ULyXOf8Z6ZMRpNbjrw="
+    },
+    {
+      "id": "unifi-viewer",
+      "name": "UniFi Viewer",
+      "description": "Network health, switch ports, adoption and Wi-Fi from a UniFi controller",
+      "repo": "horinezachary/rcs-unifi-viewer",
+      "publicKey": "ed25519:Maw3FsVyOhiZxcQVC8uHB9Z8IICXv9VJ+uqubThaXWE="
     }
   ]
 }
