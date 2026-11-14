@@ -6,6 +6,9 @@ This public repo is what units read; the source is private. It holds:
   `rcs-<version>-arm64.img.xz`, published here by the source repo's release workflow. Units check these releases for
   controller updates and install only ones signed with the release key built into them.
 - **The module index**, `index.json` below.
+- **The public site**, built by `site/build.mjs` from `index.json` and the releases, and published with GitHub Pages
+  (`.github/workflows/pages.yml`): an about page and a page per module. It rebuilds on every push, every release here,
+  and daily to pick up new releases in module repos.
 
 ## Module index
 
