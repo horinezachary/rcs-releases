@@ -1,11 +1,11 @@
 #!/usr/bin/env node
-// Builds the public site into _site/: an about page with the latest controller release and the
-// module list, and one page per module in index.json. Release details come from the GitHub API,
+// Builds the public site into _site/: the pages in site/pages (overview, architecture, usage,
+// develop), with the module list and downloads filled in, and one page per module in index.json. Release details come from the GitHub API,
 // so the site is rebuilt on each push, each release, and once a day for module repos' releases.
 //
 //   node site/build.mjs            (GITHUB_TOKEN raises the API rate limit; optional)
 
-import { copyFileSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -50,7 +50,7 @@ const page = (title, body, depth = 0) => {
 <link rel="stylesheet" href="${up}style.css">
 </head>
 <body>
-<header class="top"><a class="brand" href="${up}./">Rack Control Surface</a><nav><a href="${up}./#modules">Modules</a><a href="${up}./#download">Download</a><a href="${up}./#publish">Publish a module</a></nav></header>
+<header class="top"><a class="brand" href="${up}./">Rack Control Surface</a><nav><a href="${up}architecture/">Architecture</a><a href="${up}usage/">Using it</a><a href="${up}develop/">Develop</a><a href="${up}./#modules">Modules</a><a href="${up}./#download">Download</a></nav></header>
 <main>
 ${body}
 </main>
@@ -113,38 +113,26 @@ const ctl = newest(own, (n) => /^rcs-controller-.+\.tar\.gz$/.test(n));
 const img = newest(own, (n) => /^rcs-.+-arm64\.img\.xz$/.test(n));
 const imgSum = img && img.r.assets.find((a) => a.name === `${img.asset.name}.sha256`);
 
-const about = `
-<section class="hero">
-  <h1>A rack-mount control surface for show infrastructure</h1>
-  <p class="lead">Two rack units with a 1920 × 440 touchscreen and 15 LCD keys, running one app at a time: route a Videohub, watch an LED processor, check the network, drive Companion. It runs on a Raspberry Pi and is controlled at the rack or from a browser.</p>
-</section>
-
-<section class="grid3">
-  <div><h3>One module at a time</h3><p>Each app is a module with the whole screen and all 15 keys. Home keeps it running in the background, and the unit resumes it after a power cut.</p></div>
-  <div><h3>The device is in charge</h3><p>Modules read live state from the equipment they control. Starting, restoring or reconnecting never sends a command; only an operator's tap does.</p></div>
-  <div><h3>From the rack or a browser</h3><p>The web view mirrors the panel, with more room for detail, and can be locked with a PIN.</p></div>
-</section>
-
-<section id="modules">
-  <h2>Modules</h2>
-  ${cards.length ? `<div class="cards">${cards.join('\n')}</div>` : '<p class="empty">No modules are listed yet. The first ones on the way: a Videohub router, an LED processor monitor, a UniFi network viewer and a Bitfocus Companion host.</p>'}
-</section>
-
-<section id="download">
-  <h2>Download</h2>
-  ${img ? `<p>SD card image for 64-bit Raspberry Pi boards, controller v${esc(img.asset.name.slice(4, -'-arm64.img.xz'.length))} (${date(img.r.published_at)}).</p>
+const fill = {
+  modules: cards.length
+    ? `<div class="cards">${cards.join('\n')}</div>`
+    : '<p class="empty">No modules are listed yet. The first ones on the way: a video router, an LED processor monitor, a network viewer and a Bitfocus Companion host. <a href="develop/">Build your own</a>.</p>',
+  download: img
+    ? `<p>SD card image for 64-bit Raspberry Pi boards, controller v${esc(img.asset.name.slice(4, -'-arm64.img.xz'.length))} (${date(img.r.published_at)}).</p>
   <p class="actions"><a class="button" href="${esc(img.asset.browser_download_url)}">Download ${esc(img.asset.name)} (${size(img.asset.size)})</a>${imgSum ? ` <a href="${esc(imgSum.browser_download_url)}">SHA-256</a>` : ''}</p>
-  <p class="hint">Write it with Raspberry Pi Imager (Choose OS › Use custom). Its settings can add Wi-Fi. Once the unit boots, open <code>http://rack-surface.local/</code>.</p>` : '<p class="empty">The first SD card image is not out yet.</p>'}
-  ${ctl ? `<p class="hint">Units already running update themselves from Settings › Updates. The latest controller is v${esc(ctl.asset.name.slice('rcs-controller-'.length, -'.tar.gz'.length))}; see <a href="https://github.com/${HERE}/releases">all releases</a>.</p>` : ''}
-</section>
+  <p class="hint">Write it with Raspberry Pi Imager (Choose OS › Use custom). Its settings can add Wi-Fi. Once the unit boots, open <code>http://rack-surface.local/</code>.</p>${
+    ctl ? `<p class="hint">Units already running update themselves from Settings › Updates. The latest controller is v${esc(ctl.asset.name.slice('rcs-controller-'.length, -'.tar.gz'.length))}; see <a href="https://github.com/${HERE}/releases">all releases</a>.</p>` : ''}`
+    : '<p class="empty">The first SD card image is not out yet.</p>'
+};
 
-<section id="publish">
-  <h2>Publish a module</h2>
-  <ol>
-    <li>Build your module and publish signed releases (<code>&lt;id&gt;-&lt;version&gt;.zip</code> and its <code>.zip.sig</code>) from its own GitHub repo.</li>
-    <li>Open a pull request on <a href="https://github.com/${HERE}">${esc(HERE)}</a> that adds your module to <code>index.json</code> with your publisher key.</li>
-    <li>Once it is merged, units list your module and see each new release as an update. This site adds a page for it.</li>
-  </ol>
-</section>`;
-writeFileSync(path.join(OUT, 'index.html'), page('Rack Control Surface', about));
+const PAGES = path.join(ROOT, 'site', 'pages');
+for (const file of readdirSync(PAGES).filter((f) => f.endsWith('.html'))) {
+  const src = readFileSync(path.join(PAGES, file), 'utf8');
+  const title = /<!--\s*title:\s*(.+?)\s*-->/.exec(src)?.[1] ?? 'Rack Control Surface';
+  const body = src.replace(/<!--[\s\S]*?-->\n?/, '').replace(/\{\{(\w+)\}\}/g, (_, k) => fill[k] ?? '');
+  const name = file.replace(/\.html$/, '');
+  const dir = name === 'index' ? OUT : path.join(OUT, name);
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(path.join(dir, 'index.html'), page(name === 'index' ? title : `${title} · Rack Control Surface`, body, name === 'index' ? 0 : 1));
+}
 console.log(`built ${modules.length} module page(s) into ${path.relative(process.cwd(), OUT) || '.'}`);
