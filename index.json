@@ -6,6 +6,13 @@
       "description": "Route sources to destinations on a Blackmagic Videohub",
       "repo": "horinezachary/rcs-videohub-router",
       "publicKey": "ed25519:rLZWenSiRqwXru8SQfQC4R818vduQBjtuxhk4yw5gC0="
+    },
+    {
+      "id": "companion",
+      "name": "Companion",
+      "description": "Use the touch screen and Stream Deck as Bitfocus Companion surfaces",
+      "repo": "horinezachary/rcs-companion-module",
+      "publicKey": "ed25519:lgu2KDv901JTGcsSrvaYTWLm0ULyXOf8Z6ZMRpNbjrw="
     }
   ]
 }
