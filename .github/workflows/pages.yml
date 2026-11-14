@@ -1,11 +1,12 @@
 # Builds the public site (site/build.mjs) and publishes it with GitHub Pages: on each push to main,
-# each release here, once a day (for new releases in module repos), and by hand.
+# each release here (published, or edited, which the release workflow does when it attaches the SD image),
+# once a day (for new releases in module repos), and by hand.
 name: pages
 on:
   push:
     branches: [main]
   release:
-    types: [published]
+    types: [published, edited]
   schedule:
     - cron: '17 9 * * *'
   workflow_dispatch:
