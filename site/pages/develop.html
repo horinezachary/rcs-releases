@@ -1,0 +1,57 @@
+<!-- title: Develop a module -->
+<h1>Develop a module</h1>
+<p class="lead">A module is a small TypeScript or JavaScript program with web pages for its UI. You build it against a desktop simulator, then publish signed releases from your own GitHub repo.</p>
+
+<p class="note">The module SDK (<code>@rcs/module-sdk</code>), the project template and the simulator will be published to npm when the platform opens to outside developers. This page shows how development will work.</p>
+
+<h2>Start a module</h2>
+<pre><code>npx create-rcs-module my-module
+cd my-module
+npm install
+npm run dev        # the simulator, with your module loaded and reloaded on save</code></pre>
+<p>The simulator shows the panel and the 15 keys in a browser, plus the web view, with controls to crash the module or cut the power so you can test recovery.</p>
+
+<h2>What a module looks like</h2>
+<pre><code>import { defineModule } from '@rcs/module-sdk';
+
+export default defineModule({
+  async start(ctx) {
+    await ctx.state.init({ count: 0 });
+    await ctx.keys.setMany([{ index: 0, label: '+1' }]);
+  },
+  key(ctx, e) {
+    if (e.index === 0 &amp;&amp; e.action === 'down') {
+      void ctx.state.patch({ count: ctx.state.value.count + 1 });
+    }
+  }
+});</code></pre>
+<ul>
+  <li><code>module.json</code> names the module, its version, the API version, its entry file and its UI folders.</li>
+  <li><code>ctx.state</code> holds the module's own data and is autosaved. <code>ctx.config</code> holds its settings.</li>
+  <li><code>ctx.keys</code> draws the keys; <code>key</code> and <code>hold</code> receive presses.</li>
+  <li><code>ctx.ui.send</code> talks to your UI pages, which answer with <code>rcs.send</code> and listen with <code>rcs.on('message')</code>.</li>
+</ul>
+
+<h2>Rules every module follows</h2>
+<ul>
+  <li><strong>The device is the source of truth.</strong> State and saves hold only your module's settings and presets, never the device's live state (for example a router's current routes).</li>
+  <li><strong>Starting, restoring and reconnecting only read.</strong> Commands go to equipment only when an operator taps something.</li>
+  <li>Use the system elements and theme for a consistent look; a module may set its own colour scheme.</li>
+</ul>
+
+<h2>Package and sign</h2>
+<pre><code>npx rcs-pack keygen --out ~/my-module.key   # once; keep the private key safe
+npm run pack                               # release/&lt;id&gt;-&lt;version&gt;.zip
+npx rcs-pack sign                          # release/&lt;id&gt;-&lt;version&gt;.zip.sig</code></pre>
+<p>Packages carry no <code>node_modules</code>: the unit provides the SDK, and anything else must be bundled into <code>dist/</code>. The template's release workflow tests, packs, signs and publishes a GitHub Release when you push a tag <code>v&lt;version&gt;</code>, with your private key stored as the Actions secret <code>RCS_SIGNING_KEY</code>.</p>
+
+<h2>Get listed</h2>
+<p>Open a pull request on <a href="https://github.com/horinezachary/rcs-releases">rcs-releases</a> that adds your module to <code>index.json</code>:</p>
+<pre><code>{
+  "id": "my-module",
+  "name": "My Module",
+  "description": "What it controls, in one line",
+  "repo": "you/rcs-my-module",
+  "publicKey": "ed25519:…"
+}</code></pre>
+<p>Once it's merged, units list your module, offer each new signed release as an update, and this site gets a page for it. To test on a unit before then, turn on Developer mode at the panel and upload an unsigned zip from the web view.</p>

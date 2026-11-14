@@ -1,0 +1,32 @@
+<!-- title: Using it -->
+<h1>Using it</h1>
+<p class="lead">Everything is reachable from the icon strip on the left of the screen, or from the menu bar in the web view.</p>
+
+<h2>Home and modules</h2>
+<ul>
+  <li><strong>Home</strong> sits at the top of the strip and lists the installed modules. Tap one to start it. Starting a different module asks before it replaces the one running.</li>
+  <li>While a module runs, its own icons sit below Home. Going Home leaves it running, so you can reach Settings without closing it.</li>
+  <li>After a power cut, the unit starts the last module again with its settings.</li>
+</ul>
+
+<h2>Saves</h2>
+<p>A save holds a module's own settings and presets, never the live state of the equipment. Save under a name, restore later (you're warned about unsaved changes), or delete saves you no longer need. Stopping a module keeps its saves; Reset in Settings clears its working data but keeps named saves.</p>
+
+<h2>Settings</h2>
+<ul>
+  <li><strong>Network</strong>: DHCP or a static address, typed on the keys.</li>
+  <li><strong>Web access</strong>: turns the web view on or off, with an optional PIN. The same PIN can lock the panel; while it's locked, the keys become a PIN pad.</li>
+  <li><strong>Modules</strong>: install from the index, update, upload a zip, reset or remove. Removing a module keeps its data and saves.</li>
+  <li><strong>Updates</strong>: checks for module and controller updates. Nothing installs until you tap Update.</li>
+  <li><strong>System</strong>: Developer mode (turned on at the panel only) and factory reset, which wipes module data and saves and returns networking to DHCP, but keeps installed modules.</li>
+</ul>
+
+<h2>The web view</h2>
+<p>Open <code>http://rack-surface.local/</code> (or the unit's address). The menu bar has Home first, the running module's pages, Saves, a mirror of the panel you can tap, and Settings last. Modules can show more detail here than fits on the panel.</p>
+
+<h2>Setting up a unit</h2>
+<ol>
+  <li>Download the SD card image from the <a href="../#download">download section</a>.</li>
+  <li>Write it with Raspberry Pi Imager (Choose OS › Use custom). Its settings can add Wi-Fi.</li>
+  <li>Boot the unit; the panel comes up on its own. Install modules from Settings › Modules.</li>
+</ol>
