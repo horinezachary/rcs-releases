@@ -18,7 +18,19 @@ concurrency:
   group: pages
   cancel-in-progress: true
 jobs:
+  # A release event runs on the release's tag, and the github-pages environment only lets main deploy.
+  # So a release starts this workflow again on main instead of deploying itself.
+  on-main:
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - run: gh workflow run pages.yml --repo "${{ github.repository }}" --ref main
+        env:
+          GH_TOKEN: ${{ github.token }}
   build:
+    if: github.event_name != 'release'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
