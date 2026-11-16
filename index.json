@@ -27,6 +27,13 @@
       "description": "Find, watch and manage Netgear AV Line switches: ports, VLANs, PoE and health",
       "repo": "horinezachary/rcs-netgearAV-module",
       "publicKey": "ed25519:UIP+Iiw6HGPDUIw9/tvaOrXSAPesmTrxVSpo2RSNO8Q="
+    },
+    {
+      "id": "led-monitor",
+      "name": "LED Processor Monitor",
+      "description": "Watch Brompton Tessera and NovaStar LED processors, with confirmed controls",
+      "repo": "horinezachary/rcs-led-processor-module",
+      "publicKey": "ed25519:xfH6Ue+QmIlDYuc1SbCvcdXV9aGr/5xdtkEy6fv6cmg="
     }
   ]
 }
