@@ -1,0 +1,131 @@
+<!-- title: Themes -->
+<h1>Themes</h1>
+<p class="lead">A theme gives a unit your own colours, logo and title, on the panel and in the web view. It's a small JSON file you can write by hand, export from the unit, or have an AI tool make from a brand or design file.</p>
+
+<p class="actions"><a class="button" href="../example.rcs-theme.json" download>Example theme file</a> <a href="../rcs-theme-2.schema.json">JSON Schema</a> <a href="#for-ai-tools">Instructions for AI tools</a></p>
+
+<h2>How themes work on a unit</h2>
+<ul>
+  <li><strong>Dark or Light</strong> is set in Settings › System, on the panel or in the web view.</li>
+  <li><strong>A theme</strong> can have a dark version, a light version, or both. Each version has its own colours and logo. The Dark/Light setting picks which version shows. If a theme has no version for the chosen mode, that mode uses the built-in colours with the theme's title and no logo.</li>
+  <li><strong>Saved themes:</strong> a unit keeps up to 10. In the web view, Settings › System › Themes lists them, with Use, Edit, Download and Delete. <em>Load theme file…</em> opens a file in the editor so you can check it before you save. The panel can switch between saved themes but not edit them.</li>
+  <li><strong>What it changes:</strong> the icon strip, Home, Settings, the lock screen, the web view and its sign-in page. Modules follow it too, brand colour included, unless a module sets its own colours. A module's own colours apply only inside that module. The 15 keys stay dark in every theme; only the Done and lock keys use your accent.</li>
+  <li>A factory reset deletes saved themes and goes back to Dark.</li>
+</ul>
+
+<h2>Make one in the web view</h2>
+<ol>
+  <li>Open the web view and go to Settings › System › Themes › <em>New theme…</em></li>
+  <li>Give it a name and, if you like, a title.</li>
+  <li>Pick <em>Dark</em> or <em>Light</em> under Version, choose a logo and set the colours. The preview updates as you type, and the editor warns you about text that would be hard to read. Then do the other version, or remove it.</li>
+  <li><em>Save and use</em>. <em>Download</em> in the theme list gives you the file to load on other units.</li>
+</ol>
+
+<h2>The file</h2>
+<p>Save it as <code>&lt;name&gt;.rcs-theme.json</code>. Shortened (the logos are long base64 strings):</p>
+<pre><code>{
+  "format": "rcs-theme/2",
+  "name": "Example AV",
+  "title": "Example AV",
+  "dark": {
+    "colors": { "bg": "#14181B", "surface": "#1D2327", "border": "#33404A",
+                "text": "#EEF2F4", "muted": "#93A1AB", "accent": "#2BB3A3" },
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0i…"
+  },
+  "light": {
+    "colors": { "bg": "#F6F8F9", "surface": "#FFFFFF", "border": "#D2DADF",
+                "text": "#152025", "muted": "#56656F", "accent": "#0E7C70", "error": "#C62F3B" },
+    "logo": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0i…"
+  }
+}</code></pre>
+
+<table>
+  <tr><th>Field</th><th>What it is</th></tr>
+  <tr><td><code>format</code></td><td>Always <code>"rcs-theme/2"</code>.</td></tr>
+  <tr><td><code>name</code></td><td>What the theme is called in Settings. Up to 40 characters.</td></tr>
+  <tr><td><code>title</code></td><td>Optional, up to 40 characters. Replaces "Rack Control Surface" in the browser tab and on the sign-in page, and in the web view header when there's no logo. Both versions share it.</td></tr>
+  <tr><td><code>dark</code>, <code>light</code></td><td>The two versions. You need at least one. Each has <code>colors</code> and an optional <code>logo</code>.</td></tr>
+  <tr><td><code>logo</code> (top level)</td><td>Optional. Used by any version that doesn't have its own logo.</td></tr>
+</table>
+
+<h3 style="margin-top:28px">Colours</h3>
+<p>Each colour is <code>#RRGGBB</code> (<code>#RGB</code> also works). Any colour you leave out comes from the built-in palette for that mode, so a version can be as small as just an accent.</p>
+<table>
+  <tr><th>Key</th><th>Paints</th><th>Built-in dark</th><th>Built-in light</th></tr>
+  <tr><td><code>bg</code></td><td>The background behind everything</td><td><code>#16181C</code></td><td><code>#F7F8FA</code></td></tr>
+  <tr><td><code>surface</code></td><td>Buttons, cards, raised areas</td><td><code>#1E2228</code></td><td><code>#FFFFFF</code></td></tr>
+  <tr><td><code>border</code></td><td>Outlines and dividers</td><td><code>#2E333B</code></td><td><code>#D3D8DF</code></td></tr>
+  <tr><td><code>text</code></td><td>Main text</td><td><code>#E8EAED</code></td><td><code>#16191E</code></td></tr>
+  <tr><td><code>muted</code></td><td>Hints and secondary text</td><td><code>#8C95A1</code></td><td><code>#5F6975</code></td></tr>
+  <tr><td><code>accent</code></td><td>Your brand colour: selected items, primary buttons, focus. Text on it is picked automatically, near-black or white.</td><td><code>#F5A524</code></td><td><code>#B86E00</code></td></tr>
+  <tr><td><code>ok</code></td><td>Running, connected</td><td><code>#3DD68C</code></td><td><code>#17834D</code></td></tr>
+  <tr><td><code>warn</code></td><td>Connecting, needs attention</td><td><code>#F5A524</code></td><td><code>#A86300</code></td></tr>
+  <tr><td><code>error</code></td><td>Disconnected, failures, delete buttons</td><td><code>#F2555A</code></td><td><code>#CF3439</code></td></tr>
+</table>
+<p>The unit mixes the other shades it needs, such as the page behind cards, hover states and dialog backgrounds, from these colours.</p>
+
+<h3 style="margin-top:28px">Logos</h3>
+<ul>
+  <li>A base64 <code>data:</code> URL of a PNG, JPEG, WebP or SVG image, up to 256 KB. In the web view editor you just pick the image file.</li>
+  <li>It shows in the web view header (32 px tall, up to 140 px wide), on the panel's Home screen (56 px tall, up to 260 px wide) and on its lock screen (64 px tall, up to 320 px wide). A wordmark of about 4:1 or narrower, on a transparent background, fills those spaces best; a much wider one gets shrunk. Make raster logos at least 128 px tall so they stay sharp.</li>
+  <li>Give each version a logo that reads on its own background: usually a white or light logo for dark, and a black or dark one for light.</li>
+  <li>SVG is shown as an image only, so scripts, external fonts and linked files in it don't load. Convert text to outlines, or embed what it needs.</li>
+</ul>
+
+<h3 style="margin-top:28px">Readable colours</h3>
+<p>The editor warns you about these, and they're worth checking in any theme:</p>
+<ul>
+  <li><code>text</code> on <code>bg</code>, and <code>text</code> on <code>surface</code>: contrast of at least 4.5:1 (7:1 is better on a rack panel seen from a distance).</li>
+  <li><code>muted</code> on <code>bg</code>: at least 3:1.</li>
+  <li><code>accent</code> on <code>bg</code>: at least 3:1, so selected items stand out.</li>
+  <li>Keep <code>ok</code>, <code>warn</code> and <code>error</code> recognisably green, amber and red. Operators read them at a glance.</li>
+</ul>
+
+<h3 style="margin-top:28px">Older files</h3>
+<p>Files in the first format, <code>"rcs-theme/1"</code> (one <code>base</code> of <code>"dark"</code> or <code>"light"</code>, plus <code>colors</code> and <code>logo</code>), still load as a theme with that one version.</p>
+
+<h2>Module developers</h2>
+<p>Modules don't need to do anything: the system elements and the <code>--rcs-*</code> CSS variables follow the theme in use. A module that sets its own <code>theme</code> in <code>module.json</code> keeps those colours inside its own screen, and can set different ones for dark and light. Every element outside the module (the strip, Home, Settings) always uses the system theme.</p>
+
+<h2 id="for-ai-tools">Instructions for AI tools</h2>
+<p class="note">This section is written for an AI assistant asked to make a theme from a design artifact (a brand guide, style sheet, Figma export, website or mockup). Give it this page, or this section, along with the design. The <a href="../rcs-theme-2.schema.json">JSON Schema</a> is the exact contract.</p>
+
+<h3 style="margin-top:20px">Output</h3>
+<ul>
+  <li>Produce one JSON file named <code>&lt;slug&gt;.rcs-theme.json</code>, matching <code>rcs-theme-2.schema.json</code>. JSON only: no comments, no trailing commas.</li>
+  <li>Top level: <code>"format": "rcs-theme/2"</code>, <code>name</code> (the brand or client name, up to 40 characters), <code>title</code> (the name to show in place of the product name, often the same, up to 40 characters), and <code>dark</code> and/or <code>light</code>.</li>
+  <li>Include both <code>dark</code> and <code>light</code> unless the design clearly supports only one. Then include only that one, and don't invent the other.</li>
+  <li>Each version is <code>{ "colors": {…}, "logo": "data:…" }</code>. Colour values are uppercase <code>#RRGGBB</code>. Only these keys count: <code>bg</code>, <code>surface</code>, <code>border</code>, <code>text</code>, <code>muted</code>, <code>accent</code>, <code>ok</code>, <code>warn</code>, <code>error</code>.</li>
+</ul>
+
+<h3 style="margin-top:20px">Mapping a design to the colours</h3>
+<ol>
+  <li><strong>accent</strong>: the brand's main colour, as used for links, primary buttons and highlights. If the brand colour fails 3:1 against that version's <code>bg</code>, use a darker shade for light or a lighter shade for dark, keeping the hue. A design often already has these shades in its palette.</li>
+  <li><strong>bg</strong>: the page background of the design in that mode. If the design has only one mode, derive the other from the brand's neutrals: a near-black or charcoal for dark, white or an off-white for light.</li>
+  <li><strong>surface</strong>: the card or panel colour. It may equal <code>bg</code> if the design uses flat layouts with borders. For dark it is usually slightly lighter than <code>bg</code>; for light it is often white.</li>
+  <li><strong>border</strong>: the hairline or divider colour. It should be visible against both <code>bg</code> and <code>surface</code>, without being louder than the text.</li>
+  <li><strong>text</strong>: the body text colour, at least 4.5:1 (aim for 7:1) on <code>bg</code> and on <code>surface</code>.</li>
+  <li><strong>muted</strong>: the secondary or caption text colour, at least 3:1 on <code>bg</code>. It may equal <code>text</code> if the design uses one text colour.</li>
+  <li><strong>ok, warn, error</strong>: the brand's own success, warning and error colours if it defines them, adjusted to at least 3:1 on <code>bg</code>. Otherwise leave them out and the built-in ones are used. Never set them to the accent or to a neutral, and keep them green, amber and red.</li>
+  <li>Leave a key out rather than guess when the design gives no basis for it.</li>
+</ol>
+
+<h3 style="margin-top:20px">Logos</h3>
+<ul>
+  <li>Use the brand's wordmark or logo lockup, not an icon alone, unless that's all the brand has. Prefer SVG, then PNG with a transparent background.</li>
+  <li>Use the light-on-dark artwork (often white) for <code>dark.logo</code> and the dark-on-light artwork (often black or the brand colour) for <code>light.logo</code>. If there is only one, put it at the top level as <code>logo</code>, and only if it reads on both backgrounds.</li>
+  <li>Encode it as <code>data:image/svg+xml;base64,…</code> (or <code>image/png</code>, <code>image/jpeg</code>, <code>image/webp</code>), from the real image bytes. The decoded file must be 256 KB or less, and its bytes must match the stated type.</li>
+  <li>An SVG must be self-contained: no <code>&lt;script&gt;</code>, no external <code>href</code>s or web fonts. Convert text to paths, or use a generic font stack. Crop the <code>viewBox</code> tightly to the artwork. The logo is shown at most 140 to 320 px wide and 32 to 64 px tall, so an aspect ratio of about 4:1 or narrower works best.</li>
+  <li>If you can't produce a real logo image, leave <code>logo</code> out. Don't draw a substitute for a real brand's logo.</li>
+</ul>
+
+<h3 style="margin-top:20px">Check before you hand it over</h3>
+<ol>
+  <li><code>format</code> is <code>"rcs-theme/2"</code>, and there is at least one of <code>dark</code> and <code>light</code>.</li>
+  <li>Every colour matches <code>^#[0-9A-F]{6}$</code>.</li>
+  <li>Contrast in each version: <code>text</code>/<code>bg</code> ≥ 4.5, <code>text</code>/<code>surface</code> ≥ 4.5, <code>muted</code>/<code>bg</code> ≥ 3, <code>accent</code>/<code>bg</code> ≥ 3. The contrast is the WCAG 2 ratio, (L1 + 0.05) / (L2 + 0.05), from relative luminance.</li>
+  <li>Each logo decodes, is 256 KB or less, and reads on its version's <code>bg</code>.</li>
+  <li><code>name</code> and <code>title</code> are 40 characters or fewer.</li>
+  <li>Tell the person which colours came straight from the design, which you adjusted for contrast (and from what), and which you left to the built-in palette.</li>
+</ol>
+<p>The person loads the file in the web view at Settings › System › Themes › <em>Load theme file…</em>, checks the preview, and saves it. The unit rejects a file that breaks these rules and lists every problem.</p>
