@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.horinetech.com/rcs-releases/rcs-theme-2.schema.json",
+  "title": "Rack Control Surface theme file (rcs-theme/2)",
+  "description": "A custom theme for the Rack Control Surface panel and web view. Load it at Settings > System > Themes > Load theme file. Save it as <name>.rcs-theme.json.",
+  "type": "object",
+  "required": ["format"],
+  "anyOf": [{ "required": ["dark"] }, { "required": ["light"] }],
+  "properties": {
+    "format": { "const": "rcs-theme/2" },
+    "name": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "What the theme is called in Settings. Runs of whitespace become one space. Empty or missing: \"Custom\"."
+    },
+    "title": {
+      "type": "string",
+      "maxLength": 40,
+      "description": "Replaces \"Rack Control Surface\" in the browser tab, on the sign-in page, and in the web view header when there is no logo and no installation name. Empty: no replacement."
+    },
+    "logo": {
+      "$ref": "#/$defs/logo",
+      "description": "Used by any version that has no logo of its own."
+    },
+    "dark": { "$ref": "#/$defs/version", "description": "Used while the unit is set to Dark." },
+    "light": { "$ref": "#/$defs/version", "description": "Used while the unit is set to Light." }
+  },
+  "$defs": {
+    "hex": {
+      "type": "string",
+      "pattern": "^#([0-9A-Fa-f]{6}|[0-9A-Fa-f]{3})$"
+    },
+    "logo": {
+      "type": ["string", "null"],
+      "pattern": "^data:image/(png|jpeg|webp|svg\\+xml);base64,[A-Za-z0-9+/]+={0,2}$",
+      "description": "A base64 data: URL of a PNG, JPEG, WebP or SVG image, at most 262144 bytes once decoded. The bytes must really be that type (PNG/JPEG/WebP magic numbers are checked; an SVG must contain an <svg element). Null or empty: no logo."
+    },
+    "version": {
+      "type": "object",
+      "properties": {
+        "colors": {
+          "type": "object",
+          "description": "Any colour left out (or null or \"\") comes from the built-in palette of the same mode. Unknown keys are ignored.",
+          "properties": {
+            "bg": { "$ref": "#/$defs/hex", "description": "Background behind everything." },
+            "surface": { "$ref": "#/$defs/hex", "description": "Buttons, cards and raised areas." },
+            "border": { "$ref": "#/$defs/hex", "description": "Outlines and dividers." },
+            "text": { "$ref": "#/$defs/hex", "description": "Main text." },
+            "muted": { "$ref": "#/$defs/hex", "description": "Hints and secondary text." },
+            "accent": { "$ref": "#/$defs/hex", "description": "Brand colour: selected items, primary buttons, focus. Text on it is chosen automatically (near-black or white)." },
+            "ok": { "$ref": "#/$defs/hex", "description": "Running, connected." },
+            "warn": { "$ref": "#/$defs/hex", "description": "Connecting, needs attention." },
+            "error": { "$ref": "#/$defs/hex", "description": "Disconnected, failures, destructive actions." }
+          }
+        },
+        "logo": { "$ref": "#/$defs/logo", "description": "This version's logo. Overrides the top-level logo." }
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Builds the public site into _site/: the pages in site/pages (overview, architecture, usage,
-// develop), with the module list and downloads filled in, and one page per module in index.json. Release details come from the GitHub API,
+// develop, themes) and the files in site/static, with the module list and downloads filled in, and one page per module in index.json. Release details come from the GitHub API,
 // so the site is rebuilt on each push, each release, and once a day for module repos' releases.
 //
 //   node site/build.mjs            (GITHUB_TOKEN raises the API rate limit; optional)
@@ -50,7 +50,7 @@ const page = (title, body, depth = 0) => {
 <link rel="stylesheet" href="${up}style.css">
 </head>
 <body>
-<header class="top"><a class="brand" href="${up}./">Rack Control Surface</a><nav><a href="${up}architecture/">Architecture</a><a href="${up}usage/">Using it</a><a href="${up}develop/">Develop</a><a href="${up}./#modules">Modules</a><a href="${up}./#download">Download</a></nav></header>
+<header class="top"><a class="brand" href="${up}./">Rack Control Surface</a><nav><a href="${up}architecture/">Architecture</a><a href="${up}usage/">Using it</a><a href="${up}develop/">Develop</a><a href="${up}themes/">Themes</a><a href="${up}./#modules">Modules</a><a href="${up}./#download">Download</a></nav></header>
 <main>
 ${body}
 </main>
@@ -69,6 +69,8 @@ const modules = (index.modules ?? []).filter((m) => {
 rmSync(OUT, { recursive: true, force: true });
 mkdirSync(OUT, { recursive: true });
 copyFileSync(path.join(ROOT, 'site', 'style.css'), path.join(OUT, 'style.css'));
+// Files served as they are, such as the theme schema and example.
+for (const f of readdirSync(path.join(ROOT, 'site', 'static'))) copyFileSync(path.join(ROOT, 'site', 'static', f), path.join(OUT, f));
 writeFileSync(path.join(OUT, '.nojekyll'), '');
 
 // Module pages.
