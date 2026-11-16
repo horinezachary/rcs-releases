@@ -20,6 +20,13 @@
       "description": "Network health, switch ports, adoption and Wi-Fi from a UniFi controller",
       "repo": "horinezachary/rcs-unifi-viewer",
       "publicKey": "ed25519:Maw3FsVyOhiZxcQVC8uHB9Z8IICXv9VJ+uqubThaXWE="
+    },
+    {
+      "id": "netgear-av",
+      "name": "Netgear AV Switches",
+      "description": "Find, watch and manage Netgear AV Line switches: ports, VLANs, PoE and health",
+      "repo": "horinezachary/rcs-netgearAV-module",
+      "publicKey": "ed25519:UIP+Iiw6HGPDUIw9/tvaOrXSAPesmTrxVSpo2RSNO8Q="
     }
   ]
 }
