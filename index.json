@@ -41,6 +41,13 @@
       "description": "PixelHue Q8 presets to preview and take, and what is on every output",
       "repo": "horinezachary/rcs-PixelHue",
       "publicKey": "ed25519:1tvNU/tnJcoQHGl+Ve0y2f9haohqLLb6TMPTCo5vrcQ="
+    },
+    (
+      "id": "pixera",
+      "name": "PIXERA Monitor",
+      "description": "Find and watch PIXERA directors and players, with confirmed output controls",
+      "repo": "horinezachary/rcs-Pixera",
+      "publicKey": "ed25519:7YEKd5zbqDM3PQpevz0zi+uR581OWjgYAszMvkstfHQ="
     }
   ]
 }
