@@ -34,6 +34,13 @@
       "description": "Watch Brompton Tessera and NovaStar LED processors, with confirmed controls",
       "repo": "horinezachary/rcs-led-processor-module",
       "publicKey": "ed25519:xfH6Ue+QmIlDYuc1SbCvcdXV9aGr/5xdtkEy6fv6cmg="
+    },
+    {
+      "id": "pixera",
+      "name": "PIXERA Monitor",
+      "description": "Find and watch PIXERA directors and players, with confirmed output controls",
+      "repo": "horinezachary/rcs-Pixera",
+      "publicKey": "ed25519:7YEKd5zbqDM3PQpevz0zi+uR581OWjgYAszMvkstfHQ="
     }
   ]
 }
