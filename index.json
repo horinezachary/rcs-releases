@@ -55,6 +55,13 @@
       "description": "Recall Barco E2, S3 and EX presets to preview, take them, see each output",
       "repo": "horinezachary/rcs-EventMaster",
       "publicKey": "ed25519:Zg5Bwx3tSltl+d2Stk15Yg/SxumxMXEAeU5y3mAK6d0="
+    },
+    {
+      "id": "ptz",
+      "name": "PTZ Camera Control",
+      "description": "Pan, tilt, zoom and focus PTZ cameras from the keys, with live pictures",
+      "repo": "horinezachary/rcs-ptz",
+      "publicKey": "ed25519:SiIuHEvc7C4y7TAEu1rWwfpqxwh3s2Ui0uJDUYDXePE="
     }
   ]
 }
