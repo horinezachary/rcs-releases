@@ -34,6 +34,13 @@
       "description": "Watch Brompton Tessera and NovaStar LED processors, with confirmed controls",
       "repo": "horinezachary/rcs-led-processor-module",
       "publicKey": "ed25519:xfH6Ue+QmIlDYuc1SbCvcdXV9aGr/5xdtkEy6fv6cmg="
+    },
+    {
+      "id": "pixelhue",
+      "name": "PixelHue Switcher",
+      "description": "PixelHue Q8 presets to preview and take, and what is on every output",
+      "repo": "horinezachary/rcs-PixelHue",
+      "publicKey": "ed25519:1tvNU/tnJcoQHGl+Ve0y2f9haohqLLb6TMPTCo5vrcQ="
     }
   ]
 }
