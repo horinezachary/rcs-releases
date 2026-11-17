@@ -36,6 +36,13 @@
       "publicKey": "ed25519:xfH6Ue+QmIlDYuc1SbCvcdXV9aGr/5xdtkEy6fv6cmg="
     },
     {
+      "id": "pixelhue",
+      "name": "PixelHue Switcher",
+      "description": "PixelHue Q8 presets to preview and take, and what is on every output",
+      "repo": "horinezachary/rcs-PixelHue",
+      "publicKey": "ed25519:1tvNU/tnJcoQHGl+Ve0y2f9haohqLLb6TMPTCo5vrcQ="
+    },
+    (
       "id": "pixera",
       "name": "PIXERA Monitor",
       "description": "Find and watch PIXERA directors and players, with confirmed output controls",
