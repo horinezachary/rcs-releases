@@ -1,0 +1,40 @@
+# Rack Control Surface
+
+> A 2U rack unit for live-show infrastructure: a 1920×440 touchscreen and a 15-key Stream Deck on a small Linux board (Raspberry Pi 5 first). A system controller owns the hardware and runs modules (apps for show equipment) side by side; one module is in front with the screen and keys, the others keep running in the background. Operators use it at the rack and from any browser through the web view. Releases are signed with Ed25519 and units never install anything on their own.
+
+The module SDK, simulator and template are not on npm yet. Names such as `@rcs/module-sdk`, `@rcs/panel` and `create-rcs-module` are placeholders; module repos link these packages from a checkout of the private source repo (`horinezachary/rack-control-surface`) with `scripts/link-sdk.mjs`. Do not tell people to `npm install` them.
+
+## Pages
+
+- [Overview](https://github.horinetech.com/rcs-releases/): what the unit is, the listed modules, the SD card image
+- [Architecture](https://github.horinetech.com/rcs-releases/architecture/): controller, module processes, panel, web view, updates
+- [Using it](https://github.horinetech.com/rcs-releases/usage/): Home, running modules, saves, settings, the web view
+- [Develop a module](https://github.horinetech.com/rcs-releases/develop/): SDK, simulator, rules, packaging, signing, getting listed
+- [Themes](https://github.horinetech.com/rcs-releases/themes/): custom theme files, with a section of instructions for AI tools
+- [Theme JSON Schema](https://github.horinetech.com/rcs-releases/rcs-theme-2.schema.json): format `rcs-theme/2`
+- [Module index](https://github.com/horinezachary/rcs-releases/blob/main/index.json): every listed module, its repo and publisher key
+
+## Module facts
+
+- A module is a Node.js 22 ES-module backend plus static web UIs: `ui/` for the panel (1824×440 content area, touch targets at least 56 px) and optionally `web/` for full pages in the web view (declared as `web: { ui, pages: [{ id, label }] }` in `module.json`).
+- The backend talks to the controller with JSON-RPC 2.0 over a Unix socket, one JSON object per line, module API version 1. The SDK's `defineModule({ start, stop, key, hold, strip, ui, client, visibility, keysOwned })` hides the protocol.
+- `ctx` gives: `state` (`init`, `value`, `patch` as JSON Merge Patch; autosaved, at most 1 MB), `config` and `setConfig`, `secrets` (`value`, `set`; never sent to a UI), `keys` (`set`, `setMany`, `clear`; labels 10 characters, sublabels 12), `strip` (`set`, `select`; up to 5 icons, labels 8 characters), `ui.send(message, clientId?)` (at most 64 KB), `status(connection, text)`, `notify`, `log`, `verifyPin(reason, clientId)`, `dataDir`, `reason`, `host`.
+- Start reasons: `user`, `boot`, `restore`, `reset`, `update`, `recover`. Stop reasons: `replace`, `update`, `reset`, `restore`, `shutdown`. `lifecycle.start` must be answered within 10 s; `lifecycle.stop` within 5 s.
+- UIs reach the backend only through `window.rcs`: `ready()` (resolves with `clientId`, `surface` "panel" or "web", `page`, `content`, `visible`, `theme`), `send`, `on('message' | 'visibility' | 'resize' | 'page' | 'theme' | 'keypad', fn)`, `off`, `keypad(kind)`. Frames are sandboxed with no network.
+- System elements in every UI: `<rcs-button>`, `<rcs-toggle>`, `<rcs-tabs>`, `<rcs-list>`, `<rcs-row>`, `<rcs-tile>`, `<rcs-status>`, `<rcs-field>` (typed on the Stream Deck), `<rcs-dialog>`, `<rcs-pin>`. Colours come from `--rcs-bg`, `--rcs-surface`, `--rcs-border`, `--rcs-text`, `--rcs-muted`, `--rcs-accent`, `--rcs-ok`, `--rcs-warn`, `--rcs-error`, `--rcs-on-accent`, plus `--rcs-font` and `--rcs-mono`.
+- Packages are `<id>-<version>.zip` plus a JSON `<id>-<version>.zip.sig` (Ed25519 over id, version, API version, host range, size and SHA-256), published as GitHub Release assets tagged `v<version>` and marked Latest. Packages carry no `node_modules`: bundle dependencies into `dist/`.
+
+## Rules every module follows
+
+- The controlled device is the source of truth. State, config and saves hold only the module's own settings and presets, never live device state; read that from the device after start and every reconnect.
+- Starting, restoring, resuming and reconnecting only read from devices. Commands go out only on an operator action; modules that control live gear have an Allow controls switch (off by default) and confirm before a command (second press within 3 s on the keys, a dialog on web pages).
+- Logins and API keys go in `ctx.secrets`. Ask `ctx.verifyPin` before showing one in a UI.
+- Several modules run at once. A background module keeps polling and patching state but gets no keys and draws nothing; don't assume exclusive local ports.
+- The backend is the only copy of the truth: every UI renders from what it sends, a newly connected client gets the whole view, and navigation stays inside each UI.
+- Web view pages scroll as one page: no fixed-height `overflow: auto` boxes or `100vh` layouts; grids use `minmax(min(340px, 100%), 1fr)`; overlays use `--rcs-view-top` and `--rcs-view-height`.
+- Develop against a simulator of the equipment. Never send control commands to real show equipment without its owner's say-so.
+
+## Optional
+
+- [Example theme](https://github.horinetech.com/rcs-releases/example.rcs-theme.json)
+- [Releases](https://github.com/horinezachary/rcs-releases/releases): controller tarballs and SD card images
