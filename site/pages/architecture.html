@@ -1,6 +1,6 @@
 <!-- title: Architecture -->
 <h1>Architecture</h1>
-<p class="lead">A system controller owns the screen, the keys and the network. Modules are separate programs it starts one at a time and talks to over a small, versioned API.</p>
+<p class="lead">A system controller owns the screen, the keys and the network. Modules are separate programs it runs side by side and talks to over a small, versioned API.</p>
 
 <figure class="diagram">
 <svg viewBox="0 0 760 330" role="img" aria-label="The system controller sits in the middle. The panel shell and the web view talk to it over WebSockets; the module process talks to it over JSON-RPC on a Unix socket; only the module talks to show equipment.">
@@ -8,7 +8,7 @@
   <g class="box"><rect x="20" y="30" width="200" height="70" rx="10"/><text x="120" y="60">Panel shell</text><text class="sub" x="120" y="81">kiosk browser on the screen</text></g>
   <g class="box"><rect x="20" y="230" width="200" height="70" rx="10"/><text x="120" y="260">Web view</text><text class="sub" x="120" y="281">any browser, optional PIN</text></g>
   <g class="box"><rect x="20" y="130" width="200" height="70" rx="10"/><text x="120" y="160">Keys</text><text class="sub" x="120" y="181">15 LCD keys</text></g>
-  <g class="box accent"><rect x="540" y="120" width="200" height="90" rx="10"/><text x="640" y="153">Module process</text><text class="sub" x="640" y="175">one at a time</text><text class="sub" x="640" y="193">its own UI pages</text></g>
+  <g class="box accent"><rect x="540" y="120" width="200" height="90" rx="10"/><text x="640" y="153">Module processes</text><text class="sub" x="640" y="175">several side by side</text><text class="sub" x="640" y="193">its own UI pages</text></g>
   <g class="box"><rect x="540" y="250" width="200" height="60" rx="10"/><text x="640" y="285">Show equipment</text></g>
   <g class="line"><path d="M220 65 C250 65 250 140 270 140"/><path d="M220 265 C250 265 250 190 270 190"/><path d="M220 165 L270 165"/><path d="M470 165 L540 165"/><path d="M640 210 L640 250"/></g>
   <text class="lbl start" x="256" y="92">WebSocket</text><text class="lbl start" x="256" y="248">WebSocket</text><text class="lbl" x="505" y="155">JSON-RPC</text><text class="lbl" x="690" y="235">TCP, HTTP…</text>
@@ -21,18 +21,20 @@
 <h2>Modules</h2>
 <p>A module is a Node.js program plus web pages for its UI. The controller starts it as a child process and talks to it with JSON-RPC 2.0 over a Unix socket, one message per line (module API v1). A module gets:</p>
 <ul>
-  <li><strong>Keys</strong>: labels, colours and images for all 15 keys, and press, release and hold events.</li>
+  <li><strong>Keys</strong>: labels, colours and images for all 15 keys, and press, release and hold events, while the module is in front.</li>
   <li><strong>UI pages</strong>: HTML shown on the panel, and optionally fuller pages in the web view. Pages talk to their module through <code>window.rcs</code> and can use the system elements (<code>&lt;rcs-button&gt;</code>, <code>&lt;rcs-tile&gt;</code>, <code>&lt;rcs-field&gt;</code> and more), which follow the system theme.</li>
   <li><strong>State, config and saves</strong>: the module's own settings and presets, autosaved and restored after a restart. Live device state is never stored; the module reads it from the device again.</li>
+  <li><strong>Secrets</strong>: logins and API keys, kept apart from state and config, never sent to a page, and sealed with a passphrase when a save is downloaded.</li>
+  <li><strong>The PIN</strong>: a module can ask the operator for the system PIN before showing something sensitive, such as a Wi-Fi password.</li>
 </ul>
-<p>Only one module runs at a time. Home leaves it running in the background; starting another one stops it. If a module crashes, the controller restarts it once and tells you; if it crashes again, it stays stopped.</p>
+<p>Several modules run at once, each in its own process, with no fixed limit. One is in front: it has the screen and the keys. The others keep running in the background, still polling their equipment, and come to the front when you pick them. Starting another module asks whether to run it alongside the others or replace one of them, and you choose which. When the unit has less than 200 MB of memory to spare, it warns and suggests replacing one, but you can start it anyway. If a module crashes, the controller restarts it once and tells you; if it crashes again within a minute, it stays stopped. The others are not affected.</p>
 
 <h2>Panel and web view</h2>
-<p>The panel is a kiosk browser showing the controller's shell, which frames the module's page. The web view serves the same data to any browser: a mirror of the panel you can tap, plus the module's own web pages. Both stay in step because the data lives in the controller, but browsing the web view never moves the panel.</p>
+<p>The panel is a kiosk browser showing the controller's shell, which frames the front module's page. The web view serves the same data to any browser: a mirror of the panel you can tap, plus the web pages of every running module. Both stay in step because the data lives in the controller, but browsing the web view never moves the panel. Web pages scroll as one page, from phone width up, with no scroll boxes inside them.</p>
 
 <h2>Distribution and updates</h2>
 <ul>
   <li><strong>Modules</strong> ship as <code>&lt;id&gt;-&lt;version&gt;.zip</code> with an Ed25519 signature, from GitHub Releases in each module's own repo. The <a href="https://github.com/horinezachary/rcs-releases/blob/main/index.json">module index</a> lists each module once, with its publisher key.</li>
   <li><strong>The controller</strong> ships as a signed release in <a href="https://github.com/horinezachary/rcs-releases/releases">rcs-releases</a>. A unit unpacks a new version beside the running one and switches over; if the new version fails to start twice, it rolls back.</li>
-  <li>Units check at boot and once a day, show what is available, and never install on their own.</li>
+  <li>Units check at boot and once a day, show what is available, and never install on their own. When GitHub's hourly API limit for the unit's network is used up, a check reads each module's newest release from github.com directly.</li>
 </ul>
